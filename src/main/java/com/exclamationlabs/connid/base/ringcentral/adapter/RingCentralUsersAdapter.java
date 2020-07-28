@@ -51,7 +51,7 @@ public class RingCentralUsersAdapter extends BaseUsersAdapter<RingCentralUser, R
         String email = AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL);
         String emailType = AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, EMAIL_TYPE);
         if (StringUtils.isNotBlank(email)) {
-            user.getEmails().add(new RingCentralUserEmail(email, emailType));
+            user.getEmails().add(new RingCentralUserEmail(email, emailType == null ? "work" : emailType));
         }
 
         String phone = AdapterValueTypeConverter.getSingleAttributeValue(String.class, attributes, PHONE_NUMBER);

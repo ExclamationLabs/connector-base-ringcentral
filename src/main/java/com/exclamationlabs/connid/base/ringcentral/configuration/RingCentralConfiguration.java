@@ -13,11 +13,11 @@
 
 package com.exclamationlabs.connid.base.ringcentral.configuration;
 import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
+import org.identityconnectors.framework.spi.ConfigurationClass;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
+@ConfigurationClass(skipUnsupported = true)
 public class RingCentralConfiguration extends BaseConnectorConfiguration {
-
-    public static final String ENCODED_CLIENT_INFO = "CONNECTOR_BASE_RINGCENTRAL_ENCODED_CLIENT_INFO";
 
     public RingCentralConfiguration() {
         super();

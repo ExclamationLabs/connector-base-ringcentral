@@ -98,7 +98,7 @@ public class RingCentralDriver extends BaseRestDriver<RingCentralUser, RingCentr
         RingCentralUser responseUser = executePutRequest(API_PATH + "Users/" + userId, RingCentralUser.class, modifiedUser);
 
         if (responseUser == null || responseUser.getId() == null) {
-            throw new ConnectorException("Response from user creation was invalid");
+            throw new ConnectorException("Response from user update was invalid");
         }
     }
 

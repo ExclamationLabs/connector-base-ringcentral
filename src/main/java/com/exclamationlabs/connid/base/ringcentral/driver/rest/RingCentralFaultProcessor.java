@@ -13,7 +13,8 @@
 
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
-import com.exclamationlabs.connid.base.connector.driver.DriverDataNotFoundException;
+import com.exclamationlabs.connid.base.connector.driver.exception.DriverDataNotFoundException;
+import com.exclamationlabs.connid.base.connector.driver.exception.DriverRenewableTokenExpiredException;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.ringcentral.model.response.fault.ErrorResponse;
 import com.google.gson.GsonBuilder;
@@ -84,6 +85,8 @@ public class RingCentralFaultProcessor implements RestFaultProcessor {
         } else if (StringUtils.containsIgnoreCase(faultMessage, "Extension e-mail already exists on account")) {
             throw new AlreadyExistsException("Cannot create user: duplicate email in RingCentral.  Details: " +
                     fault);
+        } else if (StringUtils.containsIgnoreCase(faultMessage, "Token not found")) {
+            throw new DriverRenewableTokenExpiredException("RingCentral token not found");
         } else {
             throw new ConnectorException("Unknown fault occurred with RingCentral call: " +
                     fault);
