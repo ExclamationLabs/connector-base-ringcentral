@@ -38,7 +38,6 @@ public class RingCentralConnector extends BaseConnector<RingCentralUser, RingCen
     public RingCentralConnector() {
         setAuthenticator(new OAuth2TokenPasswordAuthenticator());
 
-
         setDriver(new RingCentralDriver());
         setUsersAdapter(new RingCentralUsersAdapter());
         setGroupsAdapter(new RingCentralGroupsAdapter());
