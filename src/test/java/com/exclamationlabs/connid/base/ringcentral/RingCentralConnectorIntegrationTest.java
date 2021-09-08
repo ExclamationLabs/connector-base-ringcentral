@@ -63,12 +63,12 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     @Test
     public void test110UserCreate() {
         Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(USER_NAME.name()).addValue("jane@dough.com").build());
+        attributes.add(new AttributeBuilder().setName(USER_NAME.name()).addValue("jane@dough3.com").build());
         attributes.add(new AttributeBuilder().setName(ACTIVE.name()).addValue(Boolean.TRUE).build());
-        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough").build());
+        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough3").build());
         attributes.add(new AttributeBuilder().setName(GIVEN_NAME.name()).addValue("Jane").build());
-        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Jane Dough Sr.").build());
-        attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue("jane@dough.com").build());
+        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Jane Dough3 Sr.").build());
+        attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue("jane@dough3.com").build());
         attributes.add(new AttributeBuilder().setName(EMAIL_TYPE.name()).addValue("work").build());
 
         Uid newId = connector.create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
@@ -81,12 +81,12 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test112UserCreateAlreadyExists() {
         Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(USER_NAME.name()).addValue("jane@dough.com").build());
+        attributes.add(new AttributeBuilder().setName(USER_NAME.name()).addValue("jane@dough3.com").build());
         attributes.add(new AttributeBuilder().setName(ACTIVE.name()).addValue(Boolean.TRUE).build());
-        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough").build());
+        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough3").build());
         attributes.add(new AttributeBuilder().setName(GIVEN_NAME.name()).addValue("Jane").build());
-        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Jane Dough Sr.").build());
-        attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue("jane@dough.com").build());
+        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Jane Dough3 Sr.").build());
+        attributes.add(new AttributeBuilder().setName(EMAIL.name()).addValue("jane@dough3.com").build());
         attributes.add(new AttributeBuilder().setName(EMAIL_TYPE.name()).addValue("work").build());
 
         connector.create(ObjectClass.ACCOUNT, attributes, new OperationOptionsBuilder().build());
@@ -95,9 +95,9 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     @Test
     public void test120UserModify() {
         Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough").build());
+        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough3").build());
         attributes.add(new AttributeBuilder().setName(GIVEN_NAME.name()).addValue("Johnny").build());
-        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Johnny Dough Sr.").build());
+        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Johnny Dough3 Sr.").build());
 
         Uid newId = connector.update(ObjectClass.ACCOUNT, new Uid(generatedUserId), attributes, new OperationOptionsBuilder().build());
         assertNotNull(newId);
@@ -130,6 +130,6 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
 
     @Test
     public void test390UserDelete() {
-        connector.delete(ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
+       connector.delete(ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
     }
 }

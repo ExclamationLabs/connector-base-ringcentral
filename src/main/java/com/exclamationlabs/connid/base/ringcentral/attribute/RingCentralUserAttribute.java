@@ -32,5 +32,5 @@ public enum RingCentralUserAttribute {
     REGION,
     POSTAL_CODE,
     COUNTRY,
-    ADDRESS_TYPE;
+    ADDRESS_TYPE
 }

@@ -13,14 +13,14 @@
 
 package com.exclamationlabs.connid.base.ringcentral.model.user;
 
-import com.exclamationlabs.connid.base.connector.model.UserIdentityModel;
+import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 import com.exclamationlabs.connid.base.ringcentral.model.MetaInformation;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RingCentralUser implements UserIdentityModel {
+public class RingCentralUser implements IdentityModel {
 
     private String id;
     private String userName;
@@ -71,16 +71,6 @@ public class RingCentralUser implements UserIdentityModel {
     @Override
     public String getIdentityNameValue() {
         return getUserName();
-    }
-
-    @Override
-    public String getAssignedGroupsAttributeName() {
-        return null;
-    }
-
-    @Override
-    public List<String> getAssignedGroupIds() {
-        return null;
     }
 
     public String getId() {
