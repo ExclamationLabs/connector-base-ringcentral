@@ -12,11 +12,13 @@
 */
 
 package com.exclamationlabs.connid.base.ringcentral.configuration;
+
 import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConfiguration;
 import org.identityconnectors.framework.spi.ConfigurationClass;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
-@ConfigurationClass(skipUnsupported = true)
+@ConfigurationClass(skipUnsupported = true,
+        ignore = {"credentialAccessToken", "midPointConfigurationFilePath"})
 public class RingCentralConfiguration extends BaseConnectorConfiguration {
 
     public RingCentralConfiguration() {
@@ -33,6 +35,6 @@ public class RingCentralConfiguration extends BaseConnectorConfiguration {
             helpMessageKey = "File path for the RingCentral Configuration File",
             required = true)
     public String getConfigurationFilePath() {
-        return getMidPointConfigurationFilePath();
+        return innerGetMidPointConfigurationFilePath();
     }
 }

@@ -14,26 +14,102 @@
 package com.exclamationlabs.connid.base.ringcentral.adapter;
 
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
-import com.exclamationlabs.connid.base.connector.adapter.BaseUsersAdapter;
-import com.exclamationlabs.connid.base.ringcentral.model.RingCentralGroup;
+import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
+import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUserAddress;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUserEmail;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUserPhone;
 import org.apache.commons.lang3.StringUtils;
-import org.identityconnectors.framework.common.objects.Attribute;
-import org.identityconnectors.framework.common.objects.AttributeBuilder;
-import org.identityconnectors.framework.common.objects.ConnectorObject;
-import org.identityconnectors.framework.common.objects.ConnectorObjectBuilder;
+import org.identityconnectors.framework.common.objects.*;
 
+import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttributeDataType.*;
 import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralUserAttribute.*;
+import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class RingCentralUsersAdapter extends BaseUsersAdapter<RingCentralUser, RingCentralGroup> {
+public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser> {
+
+
     @Override
-    protected RingCentralUser constructUser(Set<Attribute> attributes, boolean creation) {
-        RingCentralUser user = new RingCentralUser(!creation);
+    public ObjectClass getType() {
+        return ObjectClass.ACCOUNT;
+    }
+
+    @Override
+    public Class<RingCentralUser> getIdentityModelClass() {
+        return RingCentralUser.class;
+    }
+
+    @Override
+    public List<ConnectorAttribute> getConnectorAttributes() {
+        List<ConnectorAttribute> result = new ArrayList<>();
+        result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(USER_NAME.name(), STRING));
+        result.add(new ConnectorAttribute(EMAIL.name(), STRING));
+        result.add(new ConnectorAttribute(EMAIL_TYPE.name(), STRING));
+        result.add(new ConnectorAttribute(CREATED.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(LAST_MODIFIED.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(LOCATION_URL.name(), STRING, NOT_UPDATEABLE));
+        result.add(new ConnectorAttribute(FORMATTED_NAME.name(), STRING));
+        result.add(new ConnectorAttribute(FAMILY_NAME.name(), STRING));
+        result.add(new ConnectorAttribute(GIVEN_NAME.name(), STRING));
+        result.add(new ConnectorAttribute(ACTIVE.name(), BOOLEAN));
+        result.add(new ConnectorAttribute(PHONE_NUMBER.name(), STRING));
+        result.add(new ConnectorAttribute(PHONE_NUMBER_TYPE.name(), STRING));
+        result.add(new ConnectorAttribute(STREET_ADDRESS.name(), STRING));
+        result.add(new ConnectorAttribute(LOCALITY.name(), STRING));
+        result.add(new ConnectorAttribute(REGION.name(), STRING));
+        result.add(new ConnectorAttribute(POSTAL_CODE.name(), STRING));
+        result.add(new ConnectorAttribute(COUNTRY.name(), STRING));
+        result.add(new ConnectorAttribute(ADDRESS_TYPE.name(), STRING));
+
+        return result;
+
+    }
+
+    @Override
+    protected List<Attribute> constructAttributes(RingCentralUser user) {
+        List<Attribute> attributes = new ArrayList<>();
+        attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
+        attributes.add(AttributeBuilder.build(USER_NAME.name(), user.getUserName()));
+        attributes.add(AttributeBuilder.build(ACTIVE.name(), user.getActive()));
+        attributes.add(AttributeBuilder.build(CREATED.name(), user.getMeta().getCreated()));
+        attributes.add(AttributeBuilder.build(LAST_MODIFIED.name(), user.getMeta().getLastModified()));
+        attributes.add(AttributeBuilder.build(LOCATION_URL.name(), user.getMeta().getLocation()));
+        attributes.add(AttributeBuilder.build(FAMILY_NAME.name(), user.getName().getFamilyName()));
+        attributes.add(AttributeBuilder.build(GIVEN_NAME.name(), user.getName().getGivenName()));
+        attributes.add(AttributeBuilder.build(FORMATTED_NAME.name(), user.getName().getFormatted()));
+
+
+        if (user.getEmails() != null && user.getEmails().size() > 0) {
+            attributes.add(AttributeBuilder.build(EMAIL.name(), user.getEmails().get(0).getValue()));
+            attributes.add(AttributeBuilder.build(EMAIL_TYPE.name(), user.getEmails().get(0).getType()));
+        }
+
+        if (user.getPhoneNumbers() != null && user.getPhoneNumbers().size() > 0) {
+            attributes.add(AttributeBuilder.build(PHONE_NUMBER.name(), user.getPhoneNumbers().get(0).getValue()));
+            attributes.add(AttributeBuilder.build(PHONE_NUMBER_TYPE.name(), user.getPhoneNumbers().get(0).getType()));
+        }
+
+        if (user.getAddresses() != null && user.getAddresses().size() > 0) {
+            attributes.add(AttributeBuilder.build(STREET_ADDRESS.name(), user.getAddresses().get(0).getStreetAddress()));
+            attributes.add(AttributeBuilder.build(LOCALITY.name(), user.getAddresses().get(0).getLocality()));
+            attributes.add(AttributeBuilder.build(REGION.name(), user.getAddresses().get(0).getRegion()));
+            attributes.add(AttributeBuilder.build(POSTAL_CODE.name(), user.getAddresses().get(0).getPostalCode()));
+            attributes.add(AttributeBuilder.build(COUNTRY.name(), user.getAddresses().get(0).getCountry()));
+            attributes.add(AttributeBuilder.build(ADDRESS_TYPE.name(), user.getAddresses().get(0).getType()));
+         }
+
+        return attributes;
+    }
+
+    @Override
+    protected RingCentralUser constructModel(Set<Attribute> attributes, boolean isCreate) {
+        RingCentralUser user = new RingCentralUser(!isCreate);
 
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));
 
@@ -72,40 +148,5 @@ public class RingCentralUsersAdapter extends BaseUsersAdapter<RingCentralUser, R
         }
 
         return user;
-    }
-
-    @Override
-    protected ConnectorObject constructConnectorObject(RingCentralUser user) {
-        ConnectorObjectBuilder builder = getConnectorObjectBuilder(user)
-                .addAttribute(AttributeBuilder.build(USER_ID.name(), user.getId()))
-                .addAttribute(AttributeBuilder.build(USER_NAME.name(), user.getUserName()))
-                .addAttribute(AttributeBuilder.build(ACTIVE.name(), user.getActive()))
-                .addAttribute(AttributeBuilder.build(CREATED.name(), user.getMeta().getCreated()))
-                .addAttribute(AttributeBuilder.build(LAST_MODIFIED.name(), user.getMeta().getLastModified()))
-                .addAttribute(AttributeBuilder.build(LOCATION_URL.name(), user.getMeta().getLocation()))
-                .addAttribute(AttributeBuilder.build(FAMILY_NAME.name(), user.getName().getFamilyName()))
-                .addAttribute(AttributeBuilder.build(GIVEN_NAME.name(), user.getName().getGivenName()))
-                .addAttribute(AttributeBuilder.build(FORMATTED_NAME.name(), user.getName().getFormatted()));
-
-        if (user.getEmails() != null && user.getEmails().size() > 0) {
-            builder.addAttribute(AttributeBuilder.build(EMAIL.name(),user.getEmails().get(0).getValue()))
-                .addAttribute(AttributeBuilder.build(EMAIL_TYPE.name(), user.getEmails().get(0).getType()));
-        }
-
-        if (user.getPhoneNumbers() != null && user.getPhoneNumbers().size() > 0) {
-            builder.addAttribute(AttributeBuilder.build(PHONE_NUMBER.name(),user.getPhoneNumbers().get(0).getValue()))
-                    .addAttribute(AttributeBuilder.build(PHONE_NUMBER_TYPE.name(), user.getPhoneNumbers().get(0).getType()));
-        }
-
-        if (user.getAddresses() != null && user.getAddresses().size() > 0) {
-            builder.addAttribute(AttributeBuilder.build(STREET_ADDRESS.name(),user.getAddresses().get(0).getStreetAddress()))
-                    .addAttribute(AttributeBuilder.build(LOCALITY.name(), user.getAddresses().get(0).getLocality()))
-                    .addAttribute(AttributeBuilder.build(REGION.name(), user.getAddresses().get(0).getRegion()))
-                    .addAttribute(AttributeBuilder.build(POSTAL_CODE.name(), user.getAddresses().get(0).getPostalCode()))
-                    .addAttribute(AttributeBuilder.build(COUNTRY.name(), user.getAddresses().get(0).getCountry()))
-                    .addAttribute(AttributeBuilder.build(ADDRESS_TYPE.name(), user.getAddresses().get(0).getType()));
-        }
-
-        return builder.build();
     }
 }

@@ -15,26 +15,19 @@ package com.exclamationlabs.connid.base.ringcentral;
 
 import com.exclamationlabs.connid.base.connector.test.util.ConnectorMockRestTest;
 import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
-import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralGroupAttribute;
 import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralUserAttribute;
 import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.driver.rest.RingCentralDriver;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import org.identityconnectors.framework.common.objects.*;
 import org.identityconnectors.framework.spi.Configuration;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -160,7 +153,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    \"department\" : \"Technology\"\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponseMultiple(responseData, responseData2);
+        prepareMockResponse(responseData, responseData2);
 
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(RingCentralUserAttribute.USER_NAME.name()).addValue("test@tester.com").build());
@@ -232,7 +225,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    \"department\" : \"Technology\"\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponseMultiple(responseData, responseData2);
+        prepareMockResponse(responseData, responseData2);
 
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(RingCentralUserAttribute.GIVEN_NAME.name()).addValue("Johnny").build());
@@ -394,26 +387,18 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
     @Test(expected=ConnectorException.class)
     public void test210GroupCreate() {
-        final String responseData = "6425660710035235342";
-        prepareMockResponse(responseData);
         Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(RingCentralGroupAttribute.GROUP_NAME.name()).addValue("Flinstones").build());
         connector.create(ObjectClass.GROUP, attributes, new OperationOptionsBuilder().build());
     }
 
     @Test(expected=ConnectorException.class)
     public void test220GroupModify() {
-        prepareMockResponseEmpty();
         Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(RingCentralGroupAttribute.GROUP_NAME.name()).addValue("Flinstones2").build());
-
         connector.update(ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
     }
 
     @Test(expected=ConnectorException.class)
     public void test230GroupsGet() {
-        String responseData = "{dummy:1}";
-        prepareMockResponse(responseData);
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
         ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
@@ -423,7 +408,6 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
     @Test(expected=ConnectorException.class)
     public void test240GroupGet() {
-        String responseData = "{dummy:1}"; prepareMockResponse(responseData);
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
         ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
@@ -433,27 +417,13 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
     @Test(expected=ConnectorException.class)
     public void test290GroupDelete() {
-        prepareMockResponseEmpty();
         connector.delete(ObjectClass.GROUP, new Uid("1234"), new OperationOptionsBuilder().build());
     }
 
     @Test
     public void test390UserDelete() {
-        prepareMockResponseEmpty();
+        prepareMockResponse();
         connector.delete(ObjectClass.ACCOUNT, new Uid("1234"), new OperationOptionsBuilder().build());
-    }
-
-    protected void prepareMockResponseMultiple(String responseData, String responseData2) {
-        try {
-            Mockito.when(this.stubResponseEntity.getContent()).thenReturn(new ByteArrayInputStream(responseData.getBytes()), new ByteArrayInputStream(responseData2.getBytes()));
-            Mockito.when(this.stubResponse.getEntity()).thenReturn(this.stubResponseEntity, this.stubResponseEntity);
-            Mockito.when(this.stubResponse.getStatusLine()).thenReturn(this.stubStatusLine, this.stubStatusLine);
-            Mockito.when(this.stubStatusLine.getStatusCode()).thenReturn(200, 200);
-            Mockito.when(this.stubClient.execute( ArgumentMatchers.any(HttpRequestBase.class))).thenReturn(this.stubResponse, this.stubResponse);
-        } catch (IOException var3) {
-            Assert.fail("call failed");
-        }
-
     }
 
 

@@ -56,6 +56,9 @@ to establish a password for app usage (this is separate from your actual develop
 - In order to fully use SCIM and create users, you will need the EditAccounts permission
 which is not listed.  This needs to be requested by emailing devsupport@ringcentral.com.
 
+- Another requirement for using SCIM API - you need to add it to your Directory Integration settings.
+Login your account https://service.ringcentral.com (sandbox account https://service.devtest.ringcentral.com) then select Tools -> Directory Integration -> Google Cloud Directory or SCIM then enable it.
+
 - Your [Admin Portal panel](https://service.devtest.ringcentral.com/) can be used
 to view/manage Users.  You will also need to turn on SCIM from this interface (via More -> Account Settings
 -> Directory Integration) 
