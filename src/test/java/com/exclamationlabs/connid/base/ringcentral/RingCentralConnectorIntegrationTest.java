@@ -105,7 +105,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    //@Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test130UsersGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
