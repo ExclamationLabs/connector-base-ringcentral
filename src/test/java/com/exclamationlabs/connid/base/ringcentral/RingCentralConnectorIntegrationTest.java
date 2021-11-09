@@ -164,6 +164,21 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
 
     @Test
     @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    public void test332CallQueuesGetWithFilter() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"),
+                USER_MEMBERS.name() + BaseConnector.FILTER_SEPARATOR + "303243004"
+                , resultsHandler, new OperationOptionsBuilder().build());
+        assertTrue(idValues.size() == 1);
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
+    @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test340CallQueueGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();

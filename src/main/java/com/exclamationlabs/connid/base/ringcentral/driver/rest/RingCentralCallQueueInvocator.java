@@ -14,6 +14,7 @@
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute;
 import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
 import com.exclamationlabs.connid.base.ringcentral.model.request.CallQueueBulkAssign;
 import com.exclamationlabs.connid.base.ringcentral.model.response.ListCallQueuesResponse;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentralDriver, RingCentralCallQueue> {
 
@@ -68,6 +70,20 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
         ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH + "call-queues", ListCallQueuesResponse.class,
                 Collections.emptyMap()).getResponseObject();
         return response.getRecords();
+    }
+
+    @Override
+    public List<RingCentralCallQueue> getAllFiltered(RingCentralDriver driver, Map<String, Object> operationOptionsData,
+                                                     String filterAttribute, String filterValue) throws ConnectorException {
+        if (filterAttribute.equals(RingCentralCallQueueAttribute.USER_MEMBERS.name())) {
+            return this.getAll(driver, operationOptionsData).stream()
+                    .filter(currentCallQueue -> {
+                        currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
+                        return currentCallQueue.getUserMembers().contains(filterValue);
+                    })
+                    .collect(Collectors.toList());
+        }
+        return this.getAll(driver, operationOptionsData);
     }
 
     @Override

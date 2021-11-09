@@ -58,6 +58,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
         };
         RingCentralConfiguration configuration = new RingCentralConfiguration();
         configuration.setTestConfiguration();
+        configuration.setProperty(RingCentralConfiguration.API_URL, "test");
         connector.init(configuration);
     }
 
