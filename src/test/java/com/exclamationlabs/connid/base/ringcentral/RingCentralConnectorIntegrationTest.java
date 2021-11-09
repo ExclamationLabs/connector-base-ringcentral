@@ -17,6 +17,8 @@ import com.exclamationlabs.connid.base.connector.configuration.ConfigurationName
 import com.exclamationlabs.connid.base.connector.test.IntegrationTest;
 import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
 import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralUserAttribute.*;
+import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute.*;
+
 import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.AlreadyExistsException;
@@ -37,6 +39,8 @@ import static org.junit.Assert.assertNotNull;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class RingCentralConnectorIntegrationTest extends IntegrationTest {
+
+    private static final String EXPECTED_CALL_QUEUE_ID = "703190005";
 
     private RingCentralConnector connector;
 
@@ -61,6 +65,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test110UserCreate() {
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(USER_NAME.name()).addValue("jane@dough3.com").build());
@@ -93,6 +98,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test120UserModify() {
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough3").build());
@@ -105,7 +111,6 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test130UsersGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -118,6 +123,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test140UserGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -129,7 +135,43 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     }
 
     @Test
-    public void test390UserDelete() {
+    public void test330CallQueuesGet() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"), "", resultsHandler, new OperationOptionsBuilder().build());
+        assertTrue(idValues.size() >= 1);
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
+    @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    public void test340CallQueueGet() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"), EXPECTED_CALL_QUEUE_ID, resultsHandler, new OperationOptionsBuilder().build());
+        assertEquals(1, idValues.size());
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertEquals(EXPECTED_CALL_QUEUE_ID, idValues.get(0));
+    }
+
+    @Test
+    @Ignore // Don't run test normally, unable to automatically switch user id's back and forth for valid test
+    public void test350CallQueueUpdate() {
+        Set<Attribute> attributes = new HashSet<>();
+        attributes.add(new AttributeBuilder().setName(USER_MEMBERS.name()).addValue("303243004", "298248004").build());
+
+        connector.update(new ObjectClass("CallQueue"), new Uid(EXPECTED_CALL_QUEUE_ID), attributes, new OperationOptionsBuilder().build());
+
+    }
+
+    @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    public void test590UserDelete() {
        connector.delete(ObjectClass.ACCOUNT, new Uid(generatedUserId), new OperationOptionsBuilder().build());
     }
 }
