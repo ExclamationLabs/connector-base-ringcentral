@@ -17,9 +17,14 @@ import com.exclamationlabs.connid.base.connector.configuration.BaseConnectorConf
 import org.identityconnectors.framework.spi.ConfigurationClass;
 import org.identityconnectors.framework.spi.ConfigurationProperty;
 
+import java.util.Arrays;
+import java.util.List;
+
 @ConfigurationClass(skipUnsupported = true,
         ignore = {"credentialAccessToken", "midPointConfigurationFilePath"})
 public class RingCentralConfiguration extends BaseConnectorConfiguration {
+
+    public static final String API_URL = "CONNECTOR_RINGCENTRAL_API_URL";
 
     public RingCentralConfiguration() {
         super();
@@ -36,5 +41,9 @@ public class RingCentralConfiguration extends BaseConnectorConfiguration {
             required = true)
     public String getConfigurationFilePath() {
         return innerGetMidPointConfigurationFilePath();
+    }
+
+    public List<String> getAdditionalPropertyNames() {
+        return Arrays.asList(API_URL);
     }
 }
