@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute.USER_MEMBERS;
 import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -420,8 +421,148 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
         connector.delete(ObjectClass.GROUP, new Uid("1234"), new OperationOptionsBuilder().build());
     }
 
+    @Test(expected=ConnectorException.class)
+    public void test310CallQueueAdd() {
+        Set<Attribute> attributes = new HashSet<>();
+        connector.create(new ObjectClass("CallQueue"), attributes, new OperationOptionsBuilder().build());
+    }
+
+
     @Test
-    public void test390UserDelete() {
+    public void test320CallQueueModify() {
+        String responseData = "{\n" +
+                "  \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\",\n" +
+                "  \"records\" : [ {\n" +
+                "    \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/extension/298259004\",\n" +
+                "    \"id\" : 298259004,\n" +
+                "    \"extensionNumber\" : \"102\"\n" +
+                "  }, {\n" +
+                "    \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/extension/298248004\",\n" +
+                "    \"id\" : 298248004,\n" +
+                "    \"extensionNumber\" : \"101\"\n" +
+                "  } ],\n" +
+                "  \"paging\" : {\n" +
+                "    \"page\" : 1,\n" +
+                "    \"totalPages\" : 1,\n" +
+                "    \"perPage\" : 100,\n" +
+                "    \"totalElements\" : 2,\n" +
+                "    \"pageStart\" : 0,\n" +
+                "    \"pageEnd\" : 1\n" +
+                "  },\n" +
+                "  \"navigation\" : {\n" +
+                "    \"firstPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\"\n" +
+                "    },\n" +
+                "    \"lastPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+
+        prepareMockResponse(responseData);
+
+        Set<Attribute> attributes = new HashSet<>();
+        attributes.add(new AttributeBuilder().setName(USER_MEMBERS.name()).addValue("303243004", "298248004").build());
+
+        Uid newId = connector.update(new ObjectClass("CallQueue"), new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(newId);
+        assertNotNull(newId.getUidValue());
+    }
+
+    @Test
+    public void test330CallQueuesGet() {
+        String responseData = "{\n" +
+                "  \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues?page=1&perPage=100\",\n" +
+                "  \"records\" : [ {\n" +
+                "    \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/extension/703190005\",\n" +
+                "    \"id\" : \"703190005\",\n" +
+                "    \"extensionNumber\" : \"944\",\n" +
+                "    \"name\" : \"TestCallQueueGroup\"\n" +
+                "  } ],\n" +
+                "  \"paging\" : {\n" +
+                "    \"page\" : 1,\n" +
+                "    \"totalPages\" : 1,\n" +
+                "    \"perPage\" : 100,\n" +
+                "    \"totalElements\" : 1,\n" +
+                "    \"pageStart\" : 0,\n" +
+                "    \"pageEnd\" : 0\n" +
+                "  },\n" +
+                "  \"navigation\" : {\n" +
+                "    \"firstPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues?page=1&perPage=100\"\n" +
+                "    },\n" +
+                "    \"lastPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues?page=1&perPage=100\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        prepareMockResponse(responseData);
+
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"), "", resultsHandler, new OperationOptionsBuilder().build());
+        assertTrue(idValues.size() >= 1);
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
+    @Test
+    public void test340CallQueueGet() {
+        String responseData = "{\n" +
+                "  \"id\" : \"703190005\",\n" +
+                "  \"name\" : \"TestCallQueueGroup\",\n" +
+                "  \"extensionNumber\" : \"944\",\n" +
+                "  \"status\" : \"Enabled\"\n" +
+                "}";
+
+        String membersData = "{\n" +
+                "  \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\",\n" +
+                "  \"records\" : [ {\n" +
+                "    \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/extension/303243004\",\n" +
+                "    \"id\" : 303243004,\n" +
+                "    \"extensionNumber\" : \"103\"\n" +
+                "  }, {\n" +
+                "    \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/extension/298248004\",\n" +
+                "    \"id\" : 298248004,\n" +
+                "    \"extensionNumber\" : \"101\"\n" +
+                "  } ],\n" +
+                "  \"paging\" : {\n" +
+                "    \"page\" : 1,\n" +
+                "    \"totalPages\" : 1,\n" +
+                "    \"perPage\" : 100,\n" +
+                "    \"totalElements\" : 2,\n" +
+                "    \"pageStart\" : 0,\n" +
+                "    \"pageEnd\" : 1\n" +
+                "  },\n" +
+                "  \"navigation\" : {\n" +
+                "    \"firstPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\"\n" +
+                "    },\n" +
+                "    \"lastPage\" : {\n" +
+                "      \"uri\" : \"https://platform.devtest.ringcentral.com/restapi/v1.0/account/298248004/call-queues/703190005/members?page=1&perPage=100\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        prepareMockResponse(responseData, membersData);
+
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"), "1234", resultsHandler, new OperationOptionsBuilder().build());
+        assertEquals(1, idValues.size());
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+    }
+
+    @Test(expected=ConnectorException.class)
+    public void test390CallQueueDelete() {
+        connector.delete(new ObjectClass("CallQueue"), new Uid("1234"), new OperationOptionsBuilder().build());
+    }
+
+    @Test
+    public void test590UserDelete() {
         prepareMockResponse();
         connector.delete(ObjectClass.ACCOUNT, new Uid("1234"), new OperationOptionsBuilder().build());
     }

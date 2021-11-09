@@ -36,6 +36,10 @@ Light	50 requests / 60 secs	60 secs
 Auth	5 requests / 60 secs	60 secs
 ```
 
+- With 0.3, support added for Call Queues.  You cannot create, modify or remove call queues using
+the connector (has to be done in Ring Central itself).  But you can read call queues, and can 
+assign/remove Ring Central users to/from a call queue.  ObjectClass is "CallQueue".
+
 ## Getting started
 
 - [Create a developer account](https://developers.ringcentral.com/login.html)

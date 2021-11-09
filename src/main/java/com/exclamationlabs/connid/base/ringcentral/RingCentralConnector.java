@@ -15,6 +15,7 @@ package com.exclamationlabs.connid.base.ringcentral;
 
 import com.exclamationlabs.connid.base.connector.BaseFullAccessConnector;
 import com.exclamationlabs.connid.base.connector.authenticator.OAuth2TokenPasswordAuthenticator;
+import com.exclamationlabs.connid.base.ringcentral.adapter.RingCentralCallQueueAdapter;
 import com.exclamationlabs.connid.base.ringcentral.adapter.RingCentralUsersAdapter;
 import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.driver.rest.RingCentralDriver;
@@ -28,7 +29,7 @@ public class RingCentralConnector extends BaseFullAccessConnector {
         setAuthenticator(new OAuth2TokenPasswordAuthenticator());
 
         setDriver(new RingCentralDriver());
-        setAdapters(new RingCentralUsersAdapter());
+        setAdapters(new RingCentralUsersAdapter(), new RingCentralCallQueueAdapter());
     }
 
 }

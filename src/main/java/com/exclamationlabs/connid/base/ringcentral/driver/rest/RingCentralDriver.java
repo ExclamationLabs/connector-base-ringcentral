@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -25,11 +26,14 @@ import java.util.*;
 public class RingCentralDriver extends BaseRestDriver {
 
     public static final String API_PATH = "scim/v2/";
-    public static final String EXTENSION_API_PATH = "restapi/v1.0/account/~/extension";
+    public static final String ACCOUNT_API_PATH = "restapi/v1.0/account/~/";
+    public static final String EXTENSION_API_PATH = ACCOUNT_API_PATH + "extension";
+
 
     public RingCentralDriver() {
         super();
         addInvocator(RingCentralUser.class, new RingCentralUserInvocator());
+        addInvocator(RingCentralCallQueue.class, new RingCentralCallQueueInvocator());
     }
 
     @Override
