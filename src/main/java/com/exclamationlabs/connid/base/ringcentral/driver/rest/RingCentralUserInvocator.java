@@ -19,6 +19,9 @@ import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import com.exclamationlabs.connid.base.ringcentral.model.user.extension.RingCentralUserExtension;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,22 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
     public List<RingCentralUser> getAll(RingCentralDriver driver, Map<String, Object> map) throws ConnectorException {
         ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH + "Users", ListUsersResponse.class,
                 Collections.emptyMap()).getResponseObject();
+        return response.getUsers();
+    }
+
+    @Override
+    public List<RingCentralUser> getAllFiltered(RingCentralDriver driver, Map<String, Object> map,
+                                                String filterData, String filterValue) throws ConnectorException {
+        final String FILTER_PART = "?filter=userName%20eq%20";
+        final String FILTER_PART2 = "\"" + filterValue + "\"";
+        ListUsersResponse response;
+        try {
+            response = driver.executeGetRequest(RingCentralDriver.API_PATH +
+                            "Users" + FILTER_PART + URLEncoder.encode(FILTER_PART2, StandardCharsets.UTF_8.name()), ListUsersResponse.class,
+                    Collections.emptyMap()).getResponseObject();
+        } catch (UnsupportedEncodingException e) {
+            throw new ConnectorException(e);
+        }
         return response.getUsers();
     }
 
