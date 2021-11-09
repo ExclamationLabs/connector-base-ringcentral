@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
+import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -39,7 +40,7 @@ public class RingCentralDriver extends BaseRestDriver {
 
     @Override
     protected String getBaseServiceUrl() {
-        return "https://platform.devtest.ringcentral.com/";
+        return configuration.getProperty(RingCentralConfiguration.API_URL);
     }
 
     @Override
