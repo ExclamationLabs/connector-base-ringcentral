@@ -13,6 +13,7 @@
 
 package com.exclamationlabs.connid.base.ringcentral;
 
+import com.exclamationlabs.connid.base.connector.BaseConnector;
 import com.exclamationlabs.connid.base.connector.configuration.ConfigurationNameBuilder;
 import com.exclamationlabs.connid.base.connector.test.IntegrationTest;
 import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
@@ -124,6 +125,21 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
 
     @Test
     @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    public void test132UsersGetWithFilter() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(ObjectClass.ACCOUNT,
+                USER_NAME.name() + BaseConnector.FILTER_SEPARATOR + "connectors@exclamationlabs.com"
+                , resultsHandler, new OperationOptionsBuilder().build());
+        assertTrue(idValues.size() == 1);
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
+    @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test140UserGet() {
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -142,6 +158,21 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
 
         connector.executeQuery(new ObjectClass("CallQueue"), "", resultsHandler, new OperationOptionsBuilder().build());
         assertTrue(idValues.size() >= 1);
+        assertTrue(StringUtils.isNotBlank(idValues.get(0)));
+        assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
+    }
+
+    @Test
+    @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
+    public void test332CallQueuesGetWithFilter() {
+        List<String> idValues = new ArrayList<>();
+        List<String> nameValues = new ArrayList<>();
+        ResultsHandler resultsHandler = ConnectorTestUtils.buildResultsHandler(idValues, nameValues);
+
+        connector.executeQuery(new ObjectClass("CallQueue"),
+                USER_MEMBERS.name() + BaseConnector.FILTER_SEPARATOR + "303243004"
+                , resultsHandler, new OperationOptionsBuilder().build());
+        assertTrue(idValues.size() == 1);
         assertTrue(StringUtils.isNotBlank(idValues.get(0)));
         assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
     }
