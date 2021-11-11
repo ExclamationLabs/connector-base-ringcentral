@@ -15,15 +15,14 @@ package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
 import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute;
+import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
 import com.exclamationlabs.connid.base.ringcentral.model.request.CallQueueBulkAssign;
 import com.exclamationlabs.connid.base.ringcentral.model.response.ListCallQueuesResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentralDriver, RingCentralCallQueue> {
@@ -76,12 +75,25 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
     public List<RingCentralCallQueue> getAllFiltered(RingCentralDriver driver, Map<String, Object> operationOptionsData,
                                                      String filterAttribute, String filterValue) throws ConnectorException {
         if (filterAttribute.equals(RingCentralCallQueueAttribute.USER_MEMBERS.name())) {
-            return this.getAll(driver, operationOptionsData).stream()
+            RingCentralConfiguration ringCentralConfiguration = (RingCentralConfiguration) driver.getConfiguration();
+
+            String[] ids = new String[0];
+            if (StringUtils.isNotBlank(ringCentralConfiguration.getPreferredCallQueueIds())) {
+                ids = StringUtils.split(ringCentralConfiguration.getPreferredCallQueueIds(), ',');
+            }
+
+                List<String> idList = Arrays.asList(ids);
+                return this.getAll(driver, operationOptionsData).stream()
                     .filter(currentCallQueue -> {
-                        currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
-                        return currentCallQueue.getUserMembers().contains(filterValue);
+                        if (idList.isEmpty() || idList.contains(currentCallQueue.getIdentityIdValue())) {
+                            currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
+                            return currentCallQueue.getUserMembers().contains(filterValue);
+                        } else {
+                            return false;
+                        }
                     })
                     .collect(Collectors.toList());
+
         }
         return this.getAll(driver, operationOptionsData);
     }

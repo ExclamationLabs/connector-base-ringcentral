@@ -24,6 +24,8 @@ import java.util.List;
         ignore = {"credentialAccessToken", "midPointConfigurationFilePath"})
 public class RingCentralConfiguration extends BaseConnectorConfiguration {
 
+    private String preferredCallQueueIds;
+
     public static final String API_URL = "CONNECTOR_RINGCENTRAL_API_URL";
 
     public RingCentralConfiguration() {
@@ -45,5 +47,17 @@ public class RingCentralConfiguration extends BaseConnectorConfiguration {
 
     public List<String> getAdditionalPropertyNames() {
         return Arrays.asList(API_URL);
+    }
+
+    @ConfigurationProperty(
+            displayMessageKey = "Preferred Call Queue Ids",
+            helpMessageKey = "Comma-delimited list of Preferred Call Queue ids that need to have user assignment",
+            required = false)
+    public String getPreferredCallQueueIds() {
+        return preferredCallQueueIds;
+    }
+
+    public void setPreferredCallQueueIds(String preferredCallQueueIds) {
+        this.preferredCallQueueIds = preferredCallQueueIds;
     }
 }
