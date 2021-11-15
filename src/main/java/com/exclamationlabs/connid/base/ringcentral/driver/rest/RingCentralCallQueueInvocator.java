@@ -66,7 +66,8 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
 
     @Override
     public List<RingCentralCallQueue> getAll(RingCentralDriver driver, Map<String, Object> map) throws ConnectorException {
-        ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH + "call-queues", ListCallQueuesResponse.class,
+        ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH +
+                        "call-queues?perPage=999999", ListCallQueuesResponse.class,
                 Collections.emptyMap()).getResponseObject();
         return response.getRecords();
     }

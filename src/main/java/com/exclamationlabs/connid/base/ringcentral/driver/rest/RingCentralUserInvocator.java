@@ -67,7 +67,8 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
 
     @Override
     public List<RingCentralUser> getAll(RingCentralDriver driver, Map<String, Object> map) throws ConnectorException {
-        ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH + "Users", ListUsersResponse.class,
+        ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH +
+                        "Users?count=999999", ListUsersResponse.class,
                 Collections.emptyMap()).getResponseObject();
         return response.getUsers();
     }
@@ -75,7 +76,7 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
     @Override
     public List<RingCentralUser> getAllFiltered(RingCentralDriver driver, Map<String, Object> map,
                                                 String filterData, String filterValue) throws ConnectorException {
-        final String FILTER_PART = "?filter=userName%20eq%20";
+        final String FILTER_PART = "?count=999999&filter=userName%20eq%20";
         final String FILTER_PART2 = "\"" + filterValue + "\"";
         ListUsersResponse response;
         try {
