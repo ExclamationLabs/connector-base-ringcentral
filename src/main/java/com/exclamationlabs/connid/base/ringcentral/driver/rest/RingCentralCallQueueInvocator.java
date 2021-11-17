@@ -84,17 +84,19 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
             }
 
                 List<String> idList = Arrays.asList(ids);
-                return this.getAll(driver, operationOptionsData).stream()
-                    .filter(currentCallQueue -> {
-                        if (idList.isEmpty() || idList.contains(currentCallQueue.getIdentityIdValue())) {
-                            currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
-                            return currentCallQueue.getUserMembers().contains(filterValue);
-                        } else {
-                            return false;
-                        }
-                    })
-                    .collect(Collectors.toList());
+            List<RingCentralCallQueue> list = this.getAll(driver, operationOptionsData);
+            List<RingCentralCallQueue> matchedList = new ArrayList<>();
+            for(RingCentralCallQueue currentCallQueue : list) {
 
+                if (idList.isEmpty() || idList.contains(currentCallQueue.getIdentityIdValue())) {
+                    currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
+                    if(currentCallQueue.getUserMembers().contains(filterValue)){
+                        matchedList.add(currentCallQueue);
+                    }
+                }
+            }
+
+            return matchedList;
         }
         return this.getAll(driver, operationOptionsData);
     }
