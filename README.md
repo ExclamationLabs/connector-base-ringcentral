@@ -74,21 +74,20 @@ resource configuration setup for Midpoint.
 
 ## Configuration properties
  
-- CONNECTOR_BASE_CONFIGURATION_ACTIVE - Set this to Y to activate the configuration 
+- service.serviceUrl - Set to service url of RingCentral to connect to.  For development, `https://platform.devtest.ringcentral.com/` 
  
-- CONNECTOR_BASE_AUTH_OAUTH2_TOKEN_URL - Currently is https://platform.devtest.ringcentral.com/restapi/oauth/token ... would likely
+- security.authenticator.oauth2Password.tokenUrl - Currently is https://platform.devtest.ringcentral.com/restapi/oauth/token ... would likely
 be different for production usage.
 
-- CONNECTOR_BASE_AUTH_OAUTH2_ENCODED_SECRET - This is an encoded combination of your Consumer Key and Consumer Key.
+- security.authenticator.oauth2Password.encodedSecret - This is an encoded combination of your Consumer Key and Consumer Key.
 In order to generate it, you can use https://www.base64encode.org/ and encode [client id]:[client secret].
 
-- CONNECTOR_BASE_AUTH_OAUTH2_USERNAME - This is the username/RingCentral phone number (with no punctuation) for your
+- security.authenticator.oauth2Password.oauth2Username - This is the username/RingCentral phone number (with no punctuation) for your
 sandbox access.  Example: 19294153709
 
-- CONNECTOR_BASE_AUTH_OAUTH2_PASSWORD - The password for your sandbox account access.  Not the
+- security.authenticator.oauth2Password.oauth2Password - The password for your sandbox account access.  Not the
 same as your password for your developer account as a whole.
 
-- CONNECTOR_GOTO_MEETING_ACCOUNT_KEY - Account Key for your developer GotoMeeting account, visible from
-the Goto Meeting Admin Web UI.
+- custom.preferredCallQueueIds - Comma-delimited list of Preferred Call Queue ids that need to have user assignment.
 
 

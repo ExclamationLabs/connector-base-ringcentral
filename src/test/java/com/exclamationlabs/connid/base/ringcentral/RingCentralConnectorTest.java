@@ -57,8 +57,12 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
             }
         };
         RingCentralConfiguration configuration = new RingCentralConfiguration();
-        configuration.setTestConfiguration();
-        configuration.setProperty(RingCentralConfiguration.API_URL, "test");
+        configuration.setServiceUrl("test");
+        configuration.setOauth2Username("test");
+        configuration.setOauth2Password("test");
+        configuration.setTokenUrl("test");
+        configuration.setEncodedSecret("test");
+
         connector.init(configuration);
     }
 
@@ -229,12 +233,13 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "}";
         prepareMockResponse(responseData, responseData2);
 
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(RingCentralUserAttribute.GIVEN_NAME.name()).addValue("Johnny").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(RingCentralUserAttribute.GIVEN_NAME.name()).
+                addValueToReplace("Johnny").build());
 
-        Uid newId = connector.update(ObjectClass.ACCOUNT, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(ObjectClass.ACCOUNT, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test
@@ -395,8 +400,8 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
     @Test(expected=ConnectorException.class)
     public void test220GroupModify() {
-        Set<Attribute> attributes = new HashSet<>();
-        connector.update(ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        connector.updateDelta(ObjectClass.GROUP, new Uid("1234"), attributes, new OperationOptionsBuilder().build());
     }
 
     @Test(expected=ConnectorException.class)
@@ -462,12 +467,13 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
         prepareMockResponse(responseData);
 
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(USER_MEMBERS.name()).addValue("303243004", "298248004").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(USER_MEMBERS.name()).
+                addValueToReplace("303243004", "298248004").build());
 
-        Uid newId = connector.update(new ObjectClass("CallQueue"), new Uid("1234"), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(new ObjectClass("CallQueue"), new Uid("1234"), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test

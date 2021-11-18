@@ -75,4 +75,15 @@ public class RingCentralCallQueue implements IdentityModel {
     public String getIdentityNameValue() {
         return getName();
     }
+
+    @Override
+    public boolean equals(Object input) {
+        return identityEquals(RingCentralCallQueue.class, this, input);
+    }
+
+    @Override
+    public int hashCode() {
+        return identityHashCode();
+    }
+
 }

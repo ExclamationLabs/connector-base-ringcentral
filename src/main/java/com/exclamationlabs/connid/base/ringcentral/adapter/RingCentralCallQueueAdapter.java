@@ -16,12 +16,13 @@ package com.exclamationlabs.connid.base.ringcentral.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
 import org.identityconnectors.framework.common.objects.Attribute;
 import org.identityconnectors.framework.common.objects.AttributeBuilder;
 import org.identityconnectors.framework.common.objects.ObjectClass;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -31,7 +32,7 @@ import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralC
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.MULTIVALUED;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.NOT_UPDATEABLE;
 
-public class RingCentralCallQueueAdapter extends BaseAdapter<RingCentralCallQueue> {
+public class RingCentralCallQueueAdapter extends BaseAdapter<RingCentralCallQueue, RingCentralConfiguration> {
 
 
     @Override
@@ -45,8 +46,8 @@ public class RingCentralCallQueueAdapter extends BaseAdapter<RingCentralCallQueu
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(CALL_QUEUE_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(CALL_QUEUE_NAME.name(), STRING));
         result.add(new ConnectorAttribute(URI.name(), STRING));
@@ -58,8 +59,8 @@ public class RingCentralCallQueueAdapter extends BaseAdapter<RingCentralCallQueu
     }
 
     @Override
-    protected List<Attribute> constructAttributes(RingCentralCallQueue queue) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(RingCentralCallQueue queue) {
+        Set<Attribute> attributes = new HashSet<>();
         attributes.add(AttributeBuilder.build(CALL_QUEUE_ID.name(), queue.getId()));
         attributes.add(AttributeBuilder.build(CALL_QUEUE_NAME.name(), queue.getName()));
         attributes.add(AttributeBuilder.build(URI.name(), queue.getUri()));
@@ -70,7 +71,10 @@ public class RingCentralCallQueueAdapter extends BaseAdapter<RingCentralCallQueu
     }
 
     @Override
-    protected RingCentralCallQueue constructModel(Set<Attribute> attributes, boolean isCreate) {
+    protected RingCentralCallQueue constructModel(Set<Attribute> attributes,
+                                                  Set<Attribute> multiValueAdd,
+                                                  Set<Attribute> multiValueRemove,
+                                                  boolean isCreate) {
         RingCentralCallQueue queue = new RingCentralCallQueue();
 
         queue.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));

@@ -13,7 +13,6 @@
 
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
-import com.exclamationlabs.connid.base.connector.configuration.ConnectorProperty;
 import com.exclamationlabs.connid.base.connector.driver.rest.BaseRestDriver;
 import com.exclamationlabs.connid.base.connector.driver.rest.RestFaultProcessor;
 import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
@@ -24,7 +23,7 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.*;
 
-public class RingCentralDriver extends BaseRestDriver {
+public class RingCentralDriver extends BaseRestDriver<RingCentralConfiguration> {
 
     public static final String API_PATH = "scim/v2/";
     public static final String ACCOUNT_API_PATH = "restapi/v1.0/account/~/";
@@ -44,17 +43,12 @@ public class RingCentralDriver extends BaseRestDriver {
 
     @Override
     protected String getBaseServiceUrl() {
-        return configuration.getProperty(RingCentralConfiguration.API_URL);
+        return configuration.getServiceUrl();
     }
 
     @Override
     protected boolean usesBearerAuthorization() {
         return true;
-    }
-
-    @Override
-    public Set<ConnectorProperty> getRequiredPropertyNames() {
-        return null;
     }
 
     @Override
