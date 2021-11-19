@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute;
 import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
@@ -23,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentralDriver, RingCentralCallQueue> {
 
@@ -65,40 +66,37 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
     }
 
     @Override
-    public List<RingCentralCallQueue> getAll(RingCentralDriver driver, Map<String, Object> map) throws ConnectorException {
-        ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH +
-                        "call-queues?perPage=999999", ListCallQueuesResponse.class,
-                Collections.emptyMap()).getResponseObject();
-        return response.getRecords();
-    }
-
-    @Override
-    public List<RingCentralCallQueue> getAllFiltered(RingCentralDriver driver, Map<String, Object> operationOptionsData,
-                                                     String filterAttribute, String filterValue) throws ConnectorException {
-        if (filterAttribute.equals(RingCentralCallQueueAttribute.USER_MEMBERS.name())) {
-            RingCentralConfiguration ringCentralConfiguration = (RingCentralConfiguration) driver.getConfiguration();
+    public Set<RingCentralCallQueue> getAll(RingCentralDriver driver, ResultsFilter filter,
+                                             ResultsPaginator paginator, Integer max) throws ConnectorException {
+        if (StringUtils.equalsIgnoreCase(filter.getAttribute(), RingCentralCallQueueAttribute.USER_MEMBERS.name())) {
+            RingCentralConfiguration ringCentralConfiguration = driver.getConfiguration();
 
             String[] ids = new String[0];
             if (StringUtils.isNotBlank(ringCentralConfiguration.getPreferredCallQueueIds())) {
                 ids = StringUtils.split(ringCentralConfiguration.getPreferredCallQueueIds(), ',');
             }
 
-                List<String> idList = Arrays.asList(ids);
-            List<RingCentralCallQueue> list = this.getAll(driver, operationOptionsData);
-            List<RingCentralCallQueue> matchedList = new ArrayList<>();
+            List<String> idList = Arrays.asList(ids);
+            Set<RingCentralCallQueue> list = this.getAll(driver, new ResultsFilter(),
+                    paginator, max);
+            Set<RingCentralCallQueue> matchedSet = new HashSet<>();
             for(RingCentralCallQueue currentCallQueue : list) {
 
                 if (idList.isEmpty() || idList.contains(currentCallQueue.getIdentityIdValue())) {
-                    currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), operationOptionsData);
-                    if(currentCallQueue.getUserMembers().contains(filterValue)){
-                        matchedList.add(currentCallQueue);
+                    currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), Collections.emptyMap());
+                    if(currentCallQueue.getUserMembers().contains(filter.getValue())){
+                        matchedSet.add(currentCallQueue);
                     }
                 }
             }
 
-            return matchedList;
+            return matchedSet;
+        } else {
+            ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH +
+                            "call-queues?perPage=999999", ListCallQueuesResponse.class,
+                    Collections.emptyMap()).getResponseObject();
+            return new HashSet<>(response.getRecords());
         }
-        return this.getAll(driver, operationOptionsData);
     }
 
     @Override

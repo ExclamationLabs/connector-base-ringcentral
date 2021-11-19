@@ -14,6 +14,8 @@
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
 import com.exclamationlabs.connid.base.connector.driver.DriverInvocator;
+import com.exclamationlabs.connid.base.connector.results.ResultsFilter;
+import com.exclamationlabs.connid.base.connector.results.ResultsPaginator;
 import com.exclamationlabs.connid.base.ringcentral.model.response.ListUsersResponse;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import com.exclamationlabs.connid.base.ringcentral.model.user.extension.RingCentralUserExtension;
@@ -22,9 +24,7 @@ import org.identityconnectors.framework.common.exceptions.ConnectorException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriver, RingCentralUser> {
 
@@ -66,27 +66,28 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
     }
 
     @Override
-    public List<RingCentralUser> getAll(RingCentralDriver driver, Map<String, Object> map) throws ConnectorException {
-        ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH +
-                        "Users?count=999999", ListUsersResponse.class,
-                Collections.emptyMap()).getResponseObject();
-        return response.getUsers();
-    }
+    public Set<RingCentralUser> getAll(RingCentralDriver driver, ResultsFilter filter,
+                                       ResultsPaginator paginator, Integer max) throws ConnectorException {
+        if (filter.hasFilter()) {
+            final String FILTER_PART = "?count=999999&filter=userName%20eq%20";
+            final String FILTER_PART2 = "\"" + filter.getValue() + "\"";
+            ListUsersResponse response;
+            try {
+                response = driver.executeGetRequest(RingCentralDriver.API_PATH +
+                                "Users" + FILTER_PART + URLEncoder.encode(FILTER_PART2, StandardCharsets.UTF_8.name()), ListUsersResponse.class,
+                        Collections.emptyMap()).getResponseObject();
+            } catch (UnsupportedEncodingException e) {
+                throw new ConnectorException(e);
+            }
+            return new HashSet<>(response.getUsers());
+        } else {
 
-    @Override
-    public List<RingCentralUser> getAllFiltered(RingCentralDriver driver, Map<String, Object> map,
-                                                String filterData, String filterValue) throws ConnectorException {
-        final String FILTER_PART = "?count=999999&filter=userName%20eq%20";
-        final String FILTER_PART2 = "\"" + filterValue + "\"";
-        ListUsersResponse response;
-        try {
-            response = driver.executeGetRequest(RingCentralDriver.API_PATH +
-                            "Users" + FILTER_PART + URLEncoder.encode(FILTER_PART2, StandardCharsets.UTF_8.name()), ListUsersResponse.class,
+            ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH +
+                            "Users?count=999999", ListUsersResponse.class,
                     Collections.emptyMap()).getResponseObject();
-        } catch (UnsupportedEncodingException e) {
-            throw new ConnectorException(e);
+            return new HashSet<>(response.getUsers());
         }
-        return response.getUsers();
+
     }
 
     @Override

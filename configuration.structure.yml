@@ -1,0 +1,20 @@
+---
+name: 'RingCentral'
+configurationClass:
+  name: 'RingCentralConfiguration'
+  package: 'com.exclamationlabs.connid.base.ringcentral.configuration'
+rest: true # io-error-retries
+service: true # service-url
+results: true
+security:
+  authenticator:
+    oauth2Password: true
+custom:
+  items:
+    optional:
+      preferredCallQueueIds:
+        type: string
+        display: 'Preferred Call Queue Ids'
+        help: 'Comma-delimited list of Preferred Call Queue ids that need to have user assignment.'
+
+

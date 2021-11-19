@@ -16,6 +16,7 @@ package com.exclamationlabs.connid.base.ringcentral.adapter;
 import com.exclamationlabs.connid.base.connector.adapter.AdapterValueTypeConverter;
 import com.exclamationlabs.connid.base.connector.adapter.BaseAdapter;
 import com.exclamationlabs.connid.base.connector.attribute.ConnectorAttribute;
+import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUser;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUserAddress;
 import com.exclamationlabs.connid.base.ringcentral.model.user.RingCentralUserEmail;
@@ -27,11 +28,10 @@ import static com.exclamationlabs.connid.base.connector.attribute.ConnectorAttri
 import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralUserAttribute.*;
 import static org.identityconnectors.framework.common.objects.AttributeInfo.Flags.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
-public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser> {
+public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser, RingCentralConfiguration> {
 
 
     @Override
@@ -45,8 +45,8 @@ public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser> {
     }
 
     @Override
-    public List<ConnectorAttribute> getConnectorAttributes() {
-        List<ConnectorAttribute> result = new ArrayList<>();
+    public Set<ConnectorAttribute> getConnectorAttributes() {
+        Set<ConnectorAttribute> result = new HashSet<>();
         result.add(new ConnectorAttribute(USER_ID.name(), STRING, NOT_UPDATEABLE));
         result.add(new ConnectorAttribute(USER_NAME.name(), STRING));
         result.add(new ConnectorAttribute(EMAIL.name(), STRING));
@@ -72,8 +72,8 @@ public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser> {
     }
 
     @Override
-    protected List<Attribute> constructAttributes(RingCentralUser user) {
-        List<Attribute> attributes = new ArrayList<>();
+    protected Set<Attribute> constructAttributes(RingCentralUser user) {
+        Set<Attribute> attributes = new HashSet<>();
         attributes.add(AttributeBuilder.build(USER_ID.name(), user.getId()));
         attributes.add(AttributeBuilder.build(USER_NAME.name(), user.getUserName()));
         attributes.add(AttributeBuilder.build(ACTIVE.name(), user.getActive()));
@@ -108,7 +108,10 @@ public class RingCentralUsersAdapter extends BaseAdapter<RingCentralUser> {
     }
 
     @Override
-    protected RingCentralUser constructModel(Set<Attribute> attributes, boolean isCreate) {
+    protected RingCentralUser constructModel(Set<Attribute> attributes,
+                                             Set<Attribute> multiValueAdd,
+                                             Set<Attribute> multiValueRemove,
+                                             boolean isCreate) {
         RingCentralUser user = new RingCentralUser(!isCreate);
 
         user.setId(AdapterValueTypeConverter.getIdentityIdAttributeValue(attributes));

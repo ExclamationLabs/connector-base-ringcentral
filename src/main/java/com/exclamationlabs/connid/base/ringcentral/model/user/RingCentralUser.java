@@ -15,6 +15,7 @@ package com.exclamationlabs.connid.base.ringcentral.model.user;
 
 import com.exclamationlabs.connid.base.connector.model.IdentityModel;
 import com.exclamationlabs.connid.base.ringcentral.model.MetaInformation;
+import com.exclamationlabs.connid.base.ringcentral.model.RingCentralCallQueue;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -143,5 +144,15 @@ public class RingCentralUser implements IdentityModel {
 
     public void setSchemas(List<String> schemas) {
         this.schemas = schemas;
+    }
+
+    @Override
+    public boolean equals(Object input) {
+        return identityEquals(RingCentralUser.class, this, input);
+    }
+
+    @Override
+    public int hashCode() {
+        return identityHashCode();
     }
 }

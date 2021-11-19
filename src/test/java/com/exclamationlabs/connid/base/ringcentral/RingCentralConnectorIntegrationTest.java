@@ -101,14 +101,17 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     @Test
     @Ignore // Ignore test to avoid topping Ring Central rate limits during testing
     public void test120UserModify() {
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(FAMILY_NAME.name()).addValue("Dough3").build());
-        attributes.add(new AttributeBuilder().setName(GIVEN_NAME.name()).addValue("Johnny").build());
-        attributes.add(new AttributeBuilder().setName(FORMATTED_NAME.name()).addValue("Johnny Dough3 Sr.").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(FAMILY_NAME.name()).
+                addValueToReplace("Dough3").build());
+        attributes.add(new AttributeDeltaBuilder().setName(GIVEN_NAME.name()).
+                addValueToReplace("Johnny").build());
+        attributes.add(new AttributeDeltaBuilder().setName(FORMATTED_NAME.name()).
+                addValueToReplace("Johnny Dough3 Sr.").build());
 
-        Uid newId = connector.update(ObjectClass.ACCOUNT, new Uid(generatedUserId), attributes, new OperationOptionsBuilder().build());
-        assertNotNull(newId);
-        assertNotNull(newId.getUidValue());
+        Set<AttributeDelta> response = connector.updateDelta(ObjectClass.ACCOUNT, new Uid(generatedUserId), attributes, new OperationOptionsBuilder().build());
+        assertNotNull(response);
+        assertTrue(response.isEmpty());
     }
 
     @Test
@@ -133,7 +136,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
         connector.executeQuery(ObjectClass.ACCOUNT,
                 USER_NAME.name() + BaseConnector.FILTER_SEPARATOR + "connectors@exclamationlabs.com"
                 , resultsHandler, new OperationOptionsBuilder().build());
-        assertTrue(idValues.size() == 1);
+        assertEquals(1, idValues.size());
         assertTrue(StringUtils.isNotBlank(idValues.get(0)));
         assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
     }
@@ -172,7 +175,7 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
         connector.executeQuery(new ObjectClass("CallQueue"),
                 USER_MEMBERS.name() + BaseConnector.FILTER_SEPARATOR + "303243004"
                 , resultsHandler, new OperationOptionsBuilder().build());
-        assertTrue(idValues.size() == 1);
+        assertEquals(1, idValues.size());
         assertTrue(StringUtils.isNotBlank(idValues.get(0)));
         assertTrue(StringUtils.isNotBlank(nameValues.get(0)));
     }
@@ -193,10 +196,11 @@ public class RingCentralConnectorIntegrationTest extends IntegrationTest {
     @Test
     @Ignore // Don't run test normally, unable to automatically switch user id's back and forth for valid test
     public void test350CallQueueUpdate() {
-        Set<Attribute> attributes = new HashSet<>();
-        attributes.add(new AttributeBuilder().setName(USER_MEMBERS.name()).addValue("303243004", "298248004").build());
+        Set<AttributeDelta> attributes = new HashSet<>();
+        attributes.add(new AttributeDeltaBuilder().setName(USER_MEMBERS.name()).
+                addValueToReplace("303243004", "298248004").build());
 
-        connector.update(new ObjectClass("CallQueue"), new Uid(EXPECTED_CALL_QUEUE_ID), attributes, new OperationOptionsBuilder().build());
+        connector.updateDelta(new ObjectClass("CallQueue"), new Uid(EXPECTED_CALL_QUEUE_ID), attributes, new OperationOptionsBuilder().build());
 
     }
 
