@@ -39,6 +39,7 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
         driver.executePostRequest(RingCentralDriver.EXTENSION_API_PATH,
                 RingCentralUserExtension.class, userExtension);
 
+        driver.rateLimitCheck("heavy");
         RingCentralUser responseUser = driver.executePostRequest(RingCentralDriver.API_PATH + "Users",
                 RingCentralUser.class, userModel).getResponseObject();
 
@@ -50,8 +51,12 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
 
     @Override
     public void update(RingCentralDriver driver, String userId, RingCentralUser modifiedUser) throws ConnectorException {
+        driver.rateLimitCheck("light");
         RingCentralUser currentUser = getOne(driver, userId, Collections.emptyMap());
         updateCurrentUser(currentUser, modifiedUser);
+
+        driver.rateLimitCheck("heavy");
+
         RingCentralUser responseUser = driver.executePutRequest(RingCentralDriver.API_PATH +
                 "Users/" + userId, RingCentralUser.class, modifiedUser).getResponseObject();
 
@@ -62,14 +67,16 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
 
     @Override
     public void delete(RingCentralDriver driver, String userId) throws ConnectorException {
+        driver.rateLimitCheck("heavy");
         driver.executeDeleteRequest(RingCentralDriver.API_PATH + "Users/" + userId, null);
     }
 
     @Override
     public Set<RingCentralUser> getAll(RingCentralDriver driver, ResultsFilter filter,
                                        ResultsPaginator paginator, Integer max) throws ConnectorException {
+        driver.rateLimitCheck("light");
         if (filter.hasFilter()) {
-            final String FILTER_PART = "?count=999999&filter=userName%20eq%20";
+            final String FILTER_PART = "?count=1000&filter=userName%20eq%20";
             final String FILTER_PART2 = "\"" + filter.getValue() + "\"";
             ListUsersResponse response;
             try {
@@ -83,7 +90,7 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
         } else {
 
             ListUsersResponse response = driver.executeGetRequest(RingCentralDriver.API_PATH +
-                            "Users?count=999999", ListUsersResponse.class,
+                            "Users?count=1000", ListUsersResponse.class,
                     Collections.emptyMap()).getResponseObject();
             return new HashSet<>(response.getUsers());
         }
@@ -92,6 +99,7 @@ public class RingCentralUserInvocator implements DriverInvocator<RingCentralDriv
 
     @Override
     public RingCentralUser getOne(RingCentralDriver driver, String userId, Map<String, Object> map) throws ConnectorException {
+        driver.rateLimitCheck("light");
         return driver.executeGetRequest(
                 RingCentralDriver.API_PATH + "Users/" + userId, RingCentralUser.class, Collections.emptyMap()).getResponseObject();
     }
