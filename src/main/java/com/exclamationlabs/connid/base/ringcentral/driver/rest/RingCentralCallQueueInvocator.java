@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentralDriver, RingCentralCallQueue> {
 
@@ -50,6 +51,8 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
         bulkAssign.setRemovedExtensionIds(membersToRemove);
 
         try {
+            driver.rateLimitCheck("heavy");
+
             driver.executePostRequest(
                     RingCentralDriver.ACCOUNT_API_PATH + "call-queues/" + queueId +
                             "/bulk-assign", CallQueueBulkAssign.class, bulkAssign).getResponseObject();
@@ -68,6 +71,8 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
     @Override
     public Set<RingCentralCallQueue> getAll(RingCentralDriver driver, ResultsFilter filter,
                                              ResultsPaginator paginator, Integer max) throws ConnectorException {
+        driver.rateLimitCheck("medium");
+
         if (StringUtils.equalsIgnoreCase(filter.getAttribute(), RingCentralCallQueueAttribute.USER_MEMBERS.name())) {
             RingCentralConfiguration ringCentralConfiguration = driver.getConfiguration();
 
@@ -76,24 +81,16 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
                 ids = StringUtils.split(ringCentralConfiguration.getPreferredCallQueueIds(), ',');
             }
 
+            ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH +
+                            "call-queues?perPage=1000&memberExtensionId="+filter.getValue(), ListCallQueuesResponse.class,
+                    Collections.emptyMap()).getResponseObject();
+
             List<String> idList = Arrays.asList(ids);
-            Set<RingCentralCallQueue> list = this.getAll(driver, new ResultsFilter(),
-                    paginator, max);
-            Set<RingCentralCallQueue> matchedSet = new HashSet<>();
-            for(RingCentralCallQueue currentCallQueue : list) {
-
-                if (idList.isEmpty() || idList.contains(currentCallQueue.getIdentityIdValue())) {
-                    currentCallQueue = getOne(driver, currentCallQueue.getIdentityIdValue(), Collections.emptyMap());
-                    if(currentCallQueue.getUserMembers().contains(filter.getValue())){
-                        matchedSet.add(currentCallQueue);
-                    }
-                }
-            }
-
-            return matchedSet;
+            return response.getRecords().stream()
+                    .filter(queue -> idList.contains(queue.getIdentityIdValue())).collect(Collectors.toSet());
         } else {
             ListCallQueuesResponse response = driver.executeGetRequest(RingCentralDriver.ACCOUNT_API_PATH +
-                            "call-queues?perPage=999999", ListCallQueuesResponse.class,
+                            "call-queues?perPage=1000", ListCallQueuesResponse.class,
                     Collections.emptyMap()).getResponseObject();
             return new HashSet<>(response.getRecords());
         }
@@ -101,6 +98,8 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
 
     @Override
     public RingCentralCallQueue getOne(RingCentralDriver driver, String queueId, Map<String, Object> map) throws ConnectorException {
+        driver.rateLimitCheck("light");
+
         RingCentralCallQueue result = driver.executeGetRequest(
                 RingCentralDriver.ACCOUNT_API_PATH + "call-queues/" + queueId,
                 RingCentralCallQueue.class, Collections.emptyMap()).getResponseObject();
@@ -114,6 +113,9 @@ public class RingCentralCallQueueInvocator implements DriverInvocator<RingCentra
 
     private List<String> getCurrentCallQueueMembers(RingCentralDriver driver, String queueId) {
         List<String> members = new ArrayList<>();
+
+        driver.rateLimitCheck("light");
+
         ListCallQueuesResponse membersResult = driver.executeGetRequest(
                 RingCentralDriver.ACCOUNT_API_PATH + "call-queues/" + queueId + "/members",
                 ListCallQueuesResponse.class, Collections.emptyMap()).getResponseObject();
