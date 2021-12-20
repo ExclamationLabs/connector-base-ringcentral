@@ -18,6 +18,7 @@ import com.exclamationlabs.connid.base.connector.test.util.ConnectorTestUtils;
 import com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralUserAttribute;
 import com.exclamationlabs.connid.base.ringcentral.configuration.RingCentralConfiguration;
 import com.exclamationlabs.connid.base.ringcentral.driver.rest.RingCentralDriver;
+import com.exclamationlabs.connid.base.ringcentral.driver.rest.RingCentralRateLimit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.identityconnectors.framework.common.exceptions.ConnectorException;
@@ -28,10 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.exclamationlabs.connid.base.ringcentral.attribute.RingCentralCallQueueAttribute.USER_MEMBERS;
 import static org.junit.Assert.*;
@@ -159,7 +157,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    \"department\" : \"Technology\"\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponse(responseData, responseData2);
+        prepareMockResponse(Collections.emptyMap(), responseData, responseData2);
 
         Set<Attribute> attributes = new HashSet<>();
         attributes.add(new AttributeBuilder().setName(RingCentralUserAttribute.USER_NAME.name()).addValue("test@tester.com").build());
@@ -231,7 +229,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    \"department\" : \"Technology\"\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponse(responseData, responseData2);
+        prepareMockResponse(Collections.emptyMap(), responseData, responseData2);
 
         Set<AttributeDelta> attributes = new HashSet<>();
         attributes.add(new AttributeDeltaBuilder().setName(RingCentralUserAttribute.GIVEN_NAME.name()).
@@ -339,7 +337,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    }\n" +
                 "  } ]\n" +
                 "}";
-        prepareMockResponse(responseData);
+        prepareMockResponse(Collections.emptyMap(), responseData);
 
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -380,7 +378,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    \"department\" : \"Technology\"\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponse(responseData);
+        prepareMockResponse(Collections.emptyMap(), responseData);
 
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -465,7 +463,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "  }\n" +
                 "}";
 
-        prepareMockResponse(responseData);
+        prepareMockResponse(Collections.emptyMap(), responseData);
 
         Set<AttributeDelta> attributes = new HashSet<>();
         attributes.add(new AttributeDeltaBuilder().setName(USER_MEMBERS.name()).
@@ -503,7 +501,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    }\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponse(responseData);
+        prepareMockResponse(Collections.emptyMap(), responseData);
 
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -552,7 +550,7 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
                 "    }\n" +
                 "  }\n" +
                 "}";
-        prepareMockResponse(responseData, membersData);
+        prepareMockResponse(Collections.emptyMap(), responseData, membersData);
 
         List<String> idValues = new ArrayList<>();
         List<String> nameValues = new ArrayList<>();
@@ -570,9 +568,8 @@ public class RingCentralConnectorTest extends ConnectorMockRestTest {
 
     @Test
     public void test590UserDelete() {
-        prepareMockResponse();
+        prepareMockResponse(Collections.emptyMap(), "");
         connector.delete(ObjectClass.ACCOUNT, new Uid("1234"), new OperationOptionsBuilder().build());
     }
-
 
  }
