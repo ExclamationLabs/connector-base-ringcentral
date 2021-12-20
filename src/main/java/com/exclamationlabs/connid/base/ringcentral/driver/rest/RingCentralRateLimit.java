@@ -1,5 +1,8 @@
 package com.exclamationlabs.connid.base.ringcentral.driver.rest;
 
+import org.apache.commons.codec.binary.StringUtils;
+import org.identityconnectors.framework.common.exceptions.ConnectorException;
+
 import java.time.Instant;
 import java.time.Duration;
 import java.util.LinkedList;
@@ -29,15 +32,16 @@ public class RingCentralRateLimit {
         }
     }
 
-    protected void setRemaining(String remaining) {
+    public void setRemaining(String remaining) {
         this.remaining = remaining;
     }
+
     protected void checkRemaining(){
-        if(remaining.equals("0")){
+        if(StringUtils.equals(remaining,"0")) {
             try {
                 sleep();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new ConnectorException(e);
             }
         }
     }
