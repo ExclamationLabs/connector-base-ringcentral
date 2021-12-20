@@ -2,6 +2,7 @@
 
 ## Change Log
 
++ **0.9** - Add upload to artifactory (2021/12/20)
 + **0.8** - Update to base framework 2.0.5 to continue to try to resolve usage limits issues with call queues (2021/11/18)
 + **0.7** - Quick fix to make sure API paging limit of 100 does not impede results, EAGLE-330 (2021/11/15)
 + **0.6** - Added createContainsExpression filtering and configuration preferred call queue id list EAGLE-330 (2021/11/10)
