@@ -90,4 +90,11 @@ same as your password for your developer account as a whole.
 
 - custom.preferredCallQueueIds - Comma-delimited list of Preferred Call Queue ids that need to have user assignment.
 
+- results.pagination (optional) - Set to `true` for RingCentral since their API and this connector supports pagination.
+
+- results.deepGet (optional) - Not applicable for RingCentral.
+
+- results.deepImport (optional) - Not applicable for RingCentral.
+
+- results.importBatchSize (optional) - Not applicable for RingCentral.
 
