@@ -37,6 +37,7 @@ def build_version = System.getenv('BUILD_NUMBER') == null ? 'SNAPSHOT' : System.
 project.version="${project_version}-${build_version}"
 
 def versionNumber = "${project_version}"
+group = 'com.exclamationlabs.connid'
 
 dependencies {
     // Required for MidPoint runtime
